@@ -1,0 +1,580 @@
+-- Table: public.blocks
+
+-- DROP TABLE public.blocks;
+
+CREATE TABLE public.blocks
+(
+    difficulty numeric(32, 1),
+    "extraData" text COLLATE pg_catalog."default",
+    "gasLimit" numeric(32, 1) NOT NULL,
+    "gasUsed" numeric(32, 1) NOT NULL,
+    "logsBloom" text COLLATE pg_catalog."default",
+    miner text COLLATE pg_catalog."default" NOT NULL,
+    "mixHash" text COLLATE pg_catalog."default",
+    nonce text COLLATE pg_catalog."default",
+    "number" bigint NOT NULL,
+    "parentHash" text COLLATE pg_catalog."default",
+    "receiptsRoot" text COLLATE pg_catalog."default",
+    "sha3Uncles" text COLLATE pg_catalog."default",
+    size numeric(32, 1),
+    "stateRoot" text COLLATE pg_catalog."default",
+    "timestamp" numeric(15, 1) NOT NULL,
+    "timestampParsed" timestamp(3) without time zone NOT NULL,
+    "totalDifficulty" numeric(32, 1),
+    "transactionsRoot" text COLLATE pg_catalog."default",
+    hash text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT blocks_pkey PRIMARY KEY (hash),
+    CONSTRAINT number_unique UNIQUE ("number")
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.blocks
+    OWNER to aditus;
+
+-- Index: miner
+
+-- DROP INDEX public.miner;
+
+CREATE INDEX miner
+    ON public.blocks USING btree
+    (miner COLLATE pg_catalog."default")
+    TABLESPACE pg_default;
+
+-- Index: number
+
+-- DROP INDEX public."number";
+
+CREATE INDEX "number"
+    ON public.blocks USING btree
+    (number)
+    TABLESPACE pg_default;
+
+-- Index: timestamp
+
+-- DROP INDEX public."timestamp";
+
+CREATE INDEX "timestamp"
+    ON public.blocks USING btree
+    (timestamp)
+    TABLESPACE pg_default;
+
+-- Index: timestampParsed
+
+-- DROP INDEX public."timestampParsed";
+
+CREATE INDEX "timestampParsed"
+    ON public.blocks USING btree
+    (timestampParsed)
+    TABLESPACE pg_default;
+
+-- Table: public.transactions
+
+-- DROP TABLE public.transactions;
+
+CREATE TABLE public.transactions
+(
+    "blockHash" text COLLATE pg_catalog."default" NOT NULL,
+    "blockNumber" numeric(32, 1) NOT NULL,
+    "from" text COLLATE pg_catalog."default" NOT NULL,
+    gas numeric(32, 1) NOT NULL,
+    "gasPrice" numeric(32, 1) NOT NULL,
+    hash text COLLATE pg_catalog."default" NOT NULL,
+    input text COLLATE pg_catalog."default",
+    nonce numeric(32, 1),
+    "to" text COLLATE pg_catalog."default",
+    "transactionIndex" numeric(32, 1),
+    value numeric(32, 1),
+    v text COLLATE pg_catalog."default",
+    r text COLLATE pg_catalog."default",
+    s text COLLATE pg_catalog."default",
+    "receiptHash" text COLLATE pg_catalog."default",
+    CONSTRAINT transactions_pkey PRIMARY KEY (hash),
+    CONSTRAINT block_hash_number FOREIGN KEY ("blockHash")
+        REFERENCES public.blocks (hash) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.transactions
+    OWNER to aditus;
+
+-- Index: blockHash
+
+-- DROP INDEX public."blockHash";
+
+CREATE INDEX "blockHash"
+    ON public.transactions USING btree
+    (blockHash COLLATE pg_catalog."default")
+    TABLESPACE pg_default;
+
+-- Index: blockNumber
+
+-- DROP INDEX public."blockNumber";
+
+CREATE INDEX "blockNumber"
+    ON public.transactions USING btree
+    (blockNumber)
+    TABLESPACE pg_default;
+
+-- Index: from
+
+-- DROP INDEX public."from";
+
+CREATE INDEX "from"
+    ON public.transactions USING btree
+    (from COLLATE pg_catalog."default")
+    TABLESPACE pg_default;
+
+-- Index: hash
+
+-- DROP INDEX public.hash;
+
+CREATE INDEX hash
+    ON public.transactions USING btree
+    (hash COLLATE pg_catalog."default")
+    TABLESPACE pg_default;
+
+-- Index: to
+
+-- DROP INDEX public."to";
+
+CREATE INDEX "to"
+    ON public.transactions USING btree
+    (to COLLATE pg_catalog."default")
+    TABLESPACE pg_default;
+
+-- Index: value
+
+-- DROP INDEX public.value;
+
+CREATE INDEX value
+    ON public.transactions USING btree
+    (value)
+    TABLESPACE pg_default;
+
+-- Table: public.aditus_wallets
+
+-- DROP TABLE public.aditus_wallets;
+
+CREATE TABLE public.aditus_wallets
+(
+    "walletAddress" text COLLATE pg_catalog."default" NOT NULL,
+    "userDetails" text COLLATE pg_catalog."default",
+    CONSTRAINT aditus_wallets_pkey PRIMARY KEY ("walletAddress")
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.aditus_wallets
+    OWNER to aditus;
+
+-- Table: public.aditus_phone_numbers
+
+-- DROP TABLE public.aditus_phone_numbers;
+
+CREATE TABLE public.aditus_phone_numbers
+(
+    "phoneNumber" text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT aditus_phone_numbers_pkey PRIMARY KEY ("phoneNumber")
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.aditus_phone_numbers
+    OWNER to aditus;
+
+CREATE SEQUENCE public.aditus_partners_id_seq
+    INCREMENT 1
+    START 3
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE public.aditus_partners_id_seq
+    OWNER TO aditus;
+
+-- Table: public.aditus_partners
+
+-- DROP TABLE public.aditus_partners;
+
+CREATE TABLE public.aditus_partners
+(
+    id bigint NOT NULL DEFAULT nextval('aditus_partners_id_seq'::regclass),
+    username text COLLATE pg_catalog."default" NOT NULL,
+    pwdhash text COLLATE pg_catalog."default",
+    pwdsalt text COLLATE pg_catalog."default",
+    email text COLLATE pg_catalog."default",
+    "fullName" text COLLATE pg_catalog."default" NOT NULL,
+    "businessName" text COLLATE pg_catalog."default" NOT NULL,
+    "businessAddress" text COLLATE pg_catalog."default",
+    "phoneNumber" text COLLATE pg_catalog."default",
+    "walletAddress" text COLLATE pg_catalog."default",
+    "walletVerificationToken" text COLLATE pg_catalog."default",
+    "walletStatus" boolean,
+    "emailVerificationToken" text COLLATE pg_catalog."default",
+    "emailStatus" boolean,
+    "publicKey" text COLLATE pg_catalog."default",
+    CONSTRAINT aditus_partners_pkey PRIMARY KEY (id)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.aditus_partners
+    OWNER to aditus;
+
+CREATE SEQUENCE public.aditus_deals_id_seq
+    INCREMENT 1
+    START 3
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE public.aditus_deals_id_seq
+    OWNER TO aditus;
+
+-- Table: public.aditus_deals
+
+-- DROP TABLE public.aditus_deals;
+
+CREATE TABLE public.aditus_deals
+(
+    id bigint NOT NULL DEFAULT nextval('aditus_deals_id_seq'::regclass),
+    dealname text COLLATE pg_catalog."default" NOT NULL,
+    description text COLLATE pg_catalog."default",
+    dealtype text COLLATE pg_catalog."default" NOT NULL,
+    startdate date,
+    enddate date,
+    "tokensPerRedemption" integer NOT NULL,
+    "totalRedemption" bigint NOT NULL,
+    "spentTokens" bigint NOT NULL,
+    status text COLLATE pg_catalog."default",
+    "formData" text COLLATE pg_catalog."default",
+    "allocatedTokens" bigint NOT NULL,
+    "partnerId" bigint,
+    "reimbursedTokens" bigint,
+    "reimbursedStatus" text COLLATE pg_catalog."default",
+    "reimbursedHash" text COLLATE pg_catalog."default",
+    "preferencesArray" text[] COLLATE pg_catalog."default",
+    CONSTRAINT aditus_deals_pkey PRIMARY KEY (id),
+    CONSTRAINT "UQ_deal_name" UNIQUE (dealname),
+    CONSTRAINT "FK_aditus_partnerId" FOREIGN KEY ("partnerId")
+        REFERENCES public.aditus_partners (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.aditus_deals
+    OWNER to aditus;
+
+CREATE SEQUENCE public.aditus_deal_claims_id_seq
+    INCREMENT 1
+    START 3
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE public.aditus_deal_claims_id_seq
+    OWNER TO aditus;
+
+-- Table: public.aditus_deal_claims
+
+-- DROP TABLE public.aditus_deal_claims;
+
+CREATE TABLE public.aditus_deal_claims
+(
+    id bigint NOT NULL DEFAULT nextval('aditus_deal_claims_id_seq'::regclass),
+    "walletAddress" text COLLATE pg_catalog."default" NOT NULL,
+    "txHash" text COLLATE pg_catalog."default",
+    "userResponseData" text COLLATE pg_catalog."default",
+    "partnerResponseData" text COLLATE pg_catalog."default",
+    "dealId" bigint NOT NULL,
+    "numberOfTokens" bigint NOT NULL,
+    CONSTRAINT aditus_deal_claims_pkey PRIMARY KEY (id),
+    CONSTRAINT "FK_deal_id" FOREIGN KEY ("dealId")
+        REFERENCES public.aditus_deals (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT "FK_wallet_address" FOREIGN KEY ("walletAddress")
+        REFERENCES public.aditus_wallets ("walletAddress") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.aditus_deal_claims
+    OWNER to aditus;
+
+-- Table: public.aditus_rehydration_log
+
+-- DROP TABLE public.aditus_rehydration_log;
+
+CREATE TABLE public.aditus_rehydration_log
+(
+    hash text COLLATE pg_catalog."default" NOT NULL,
+    "timestamp" text COLLATE pg_catalog."default",
+    amount bigint,
+    "walletAddress" text COLLATE pg_catalog."default",
+    status text COLLATE pg_catalog."default",
+    CONSTRAINT aditus_rehydration_log_pkey PRIMARY KEY (hash),
+    CONSTRAINT "FK_WALLET_ADDRESS" FOREIGN KEY ("walletAddress")
+        REFERENCES public.aditus_wallets ("walletAddress") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.aditus_rehydration_log
+    OWNER to aditus;
+
+-- Table: public.aditus_vendar_log
+
+-- DROP TABLE public.aditus_vendar_log;
+
+CREATE TABLE public.aditus_vendar_log
+(
+    hash text COLLATE pg_catalog."default" NOT NULL,
+    "timestamp" text COLLATE pg_catalog."default",
+    "claimId" bigint,
+    "walletAddress" text COLLATE pg_catalog."default",
+    status text COLLATE pg_catalog."default",
+    CONSTRAINT aditus_vendar_log_pkey PRIMARY KEY (hash),
+    CONSTRAINT "FK_CLAIM_ID" FOREIGN KEY ("claimId")
+        REFERENCES public.aditus_deal_claims (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT "FK_WALLET_ADDRESS" FOREIGN KEY ("walletAddress")
+        REFERENCES public.aditus_wallets ("walletAddress") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.aditus_vendar_log
+    OWNER to aditus;
+
+-- Table: public.aditus_reimburser_log
+
+-- DROP TABLE public.aditus_reimburser_log;
+
+CREATE TABLE public.aditus_reimburser_log
+(
+    hash text COLLATE pg_catalog."default" NOT NULL,
+    "timestamp" text COLLATE pg_catalog."default",
+    "dealId" bigint,
+    "walletAddress" text COLLATE pg_catalog."default",
+    status text COLLATE pg_catalog."default",
+    CONSTRAINT aditus_reimburser_log_pkey PRIMARY KEY (hash),
+    CONSTRAINT "FK_DEAL_ID" FOREIGN KEY ("dealId")
+        REFERENCES public.aditus_deals (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT "FK_WALLET_ADDRESS" FOREIGN KEY ("walletAddress")
+        REFERENCES public.aditus_wallets ("walletAddress") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.aditus_reimburser_log
+    OWNER to aditus;
+
+-- Table: public.aditus_preferences
+
+-- DROP TABLE public.aditus_preferences;
+
+CREATE TABLE public.aditus_preferences
+(
+    name text COLLATE pg_catalog."default" NOT NULL,
+    details text COLLATE pg_catalog."default",
+    CONSTRAINT aditus_preferences_pkey PRIMARY KEY (name)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.aditus_preferences
+    OWNER to aditus;
+
+-- Table: public.aditus_notificationids
+
+-- DROP TABLE public.aditus_notificationids;
+
+CREATE TABLE public.aditus_notificationids
+(
+    notificationid text COLLATE pg_catalog."default" NOT NULL,
+    "preferencesArray" text[] COLLATE pg_catalog."default",
+    CONSTRAINT aditus_notificationids_pkey PRIMARY KEY (notificationid)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.aditus_notificationids
+    OWNER to aditus;
+
+-- Table: public.blocks_test
+
+-- DROP TABLE public.blocks_test;
+
+CREATE TABLE public.blocks_test
+(
+    difficulty numeric(32, 1),
+    "extraData" text COLLATE pg_catalog."default",
+    "gasLimit" numeric(32, 1) NOT NULL,
+    "gasUsed" numeric(32, 1) NOT NULL,
+    "logsBloom" text COLLATE pg_catalog."default",
+    miner text COLLATE pg_catalog."default" NOT NULL,
+    "mixHash" text COLLATE pg_catalog."default",
+    nonce text COLLATE pg_catalog."default",
+    "number" bigint NOT NULL,
+    "parentHash" text COLLATE pg_catalog."default",
+    "receiptsRoot" text COLLATE pg_catalog."default",
+    "sha3Uncles" text COLLATE pg_catalog."default",
+    size numeric(32, 1),
+    "stateRoot" text COLLATE pg_catalog."default",
+    "timestamp" numeric(15, 1) NOT NULL,
+    "timestampParsed" timestamp(3) without time zone NOT NULL,
+    "totalDifficulty" numeric(32, 1),
+    "transactionsRoot" text COLLATE pg_catalog."default",
+    hash text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT blocks_test_pkey PRIMARY KEY (hash),
+    CONSTRAINT number_test_unique UNIQUE ("number")
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.blocks_test
+    OWNER to aditus;
+
+-- Table: public.transactions_test
+
+-- DROP TABLE public.transactions_test;
+
+CREATE TABLE public.transactions_test
+(
+    "blockHash" text COLLATE pg_catalog."default" NOT NULL,
+    "blockNumber" numeric(32, 1) NOT NULL,
+    "from" text COLLATE pg_catalog."default" NOT NULL,
+    gas numeric(32, 1) NOT NULL,
+    "gasPrice" numeric(32, 1) NOT NULL,
+    hash text COLLATE pg_catalog."default" NOT NULL,
+    input text COLLATE pg_catalog."default",
+    nonce numeric(32, 1),
+    "to" text COLLATE pg_catalog."default",
+    "transactionIndex" numeric(32, 1),
+    value numeric(32, 1),
+    v text COLLATE pg_catalog."default",
+    r text COLLATE pg_catalog."default",
+    s text COLLATE pg_catalog."default",
+    "receiptHash" text COLLATE pg_catalog."default",
+    CONSTRAINT transactions_test_pkey PRIMARY KEY (hash),
+    CONSTRAINT block_test_hash_number FOREIGN KEY ("blockHash")
+        REFERENCES public.blocks_test (hash) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.transactions_test
+    OWNER to aditus;
+
+-- FUNCTION: public.hex_to_bigint(text)
+
+-- DROP FUNCTION public.hex_to_bigint(text);
+
+CREATE OR REPLACE FUNCTION public.hex_to_bigint(
+	hexval text)
+    RETURNS bigint as $$
+select
+  (get_byte(x,0)::int8<<(7*8)) |
+  (get_byte(x,1)::int8<<(6*8)) |
+  (get_byte(x,2)::int8<<(5*8)) |
+  (get_byte(x,3)::int8<<(4*8)) |
+  (get_byte(x,4)::int8<<(3*8)) |
+  (get_byte(x,5)::int8<<(2*8)) |
+  (get_byte(x,6)::int8<<(1*8)) |
+  (get_byte(x,7)::int8)
+from (
+  select decode(lpad($1, 16, '0'), 'hex') as x
+) as a;
+$$
+language sql strict immutable;
+
+ALTER FUNCTION public.hex_to_bigint(text)
+    OWNER TO aditus;
+
+-- View: public."CustomTokens"
+
+-- DROP VIEW public."CustomTokens";
+
+CREATE OR REPLACE VIEW public."CustomTokens" AS
+ SELECT transactions.hash,
+    transactions."to" AS contract,
+    transactions."from" AS receiver,
+    concat('0x', ltrim("substring"(transactions.input, 11, 64), '0'::text)) AS sender,
+    hex_to_bigint(ltrim("substring"(transactions.input, 75, 64), '0'::text)) AS amount,
+        CASE
+            WHEN transactions."receiptHash" ~~ '0xddf252ad%'::text THEN true
+            ELSE false
+        END AS verified
+   FROM transactions
+  WHERE transactions.input ~~ '0xa9059cbb%'::text;
+
+ALTER TABLE public."CustomTokens"
+    OWNER TO aditus;
+
+-- View: public."CustomTokens_test"
+
+-- DROP VIEW public."CustomTokens_test";
+
+CREATE OR REPLACE VIEW public."CustomTokens_test" AS
+ SELECT transactions_test.hash,
+    transactions_test."to" AS contract,
+    transactions_test."from" AS receiver,
+    concat('0x', ltrim("substring"(transactions_test.input, 11, 64), '0'::text)) AS sender,
+    hex_to_bigint(ltrim("substring"(transactions_test.input, 75, 64), '0'::text)) AS amount,
+        CASE
+            WHEN transactions_test."receiptHash" ~~ '0xddf252ad%'::text THEN true
+            ELSE false
+        END AS verified
+   FROM transactions_test
+  WHERE transactions_test.input ~~ '0xa9059cbb%'::text;
+
+ALTER TABLE public."CustomTokens_test"
+    OWNER TO aditus;

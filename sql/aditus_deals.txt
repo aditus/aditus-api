@@ -1,0 +1,38 @@
+-- Table: public.aditus_deals
+
+-- DROP TABLE public.aditus_deals;
+
+CREATE TABLE public.aditus_deals
+(
+    id bigint NOT NULL DEFAULT nextval('aditus_deals_id_seq'::regclass),
+    dealname text COLLATE pg_catalog."default" NOT NULL,
+    description text COLLATE pg_catalog."default",
+    dealtype text COLLATE pg_catalog."default" NOT NULL,
+    startdate date,
+    enddate date,
+    "tokensPerRedemption" integer NOT NULL,
+    "totalRedemption" bigint NOT NULL,
+    "spentTokens" bigint NOT NULL,
+    status text COLLATE pg_catalog."default",
+    "formData" text COLLATE pg_catalog."default",
+    "allocatedTokens" bigint NOT NULL,
+    "partnerId" bigint,
+    "reimbursedTokens" bigint,
+    "reimbursedStatus" text COLLATE pg_catalog."default",
+    "reimbursedHash" text COLLATE pg_catalog."default",
+    "preferencesArray" text[] COLLATE pg_catalog."default",
+    banner_image text COLLATE pg_catalog."default",
+    CONSTRAINT aditus_deals_pkey PRIMARY KEY (id),
+    CONSTRAINT "UQ_deal_name" UNIQUE (dealname),
+    CONSTRAINT "FK_aditus_partnerId" FOREIGN KEY ("partnerId")
+        REFERENCES public.aditus_partners (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.aditus_deals
+    OWNER to postgres;

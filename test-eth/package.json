@@ -1,0 +1,15 @@
+{
+  "name": "test-eth",
+  "version": "0.1.1",
+  "description": "test-eth",
+  "main": "main.js",
+  "author": "Charaka Gunatillake <charaka@thesoftwarepractice.com>",
+  "dependencies": {
+    "crypto-js": "^3.1.9-1",
+    "elliptic": "^6.4.0",
+    "node-rsa": "^0.4.2",
+    "prompt": "^1.0.0",
+    "request-json": "^0.6.2",
+    "secp256k1": "^3.3.0"
+  }
+}

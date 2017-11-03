@@ -1,0 +1,30 @@
+-- Table: public.aditus_partners
+
+-- DROP TABLE public.aditus_partners;
+
+CREATE TABLE public.aditus_partners
+(
+    id bigint NOT NULL DEFAULT nextval('aditus_partners_id_seq'::regclass),
+    username text COLLATE pg_catalog."default" NOT NULL,
+    pwdhash text COLLATE pg_catalog."default",
+    pwdsalt text COLLATE pg_catalog."default",
+    email text COLLATE pg_catalog."default",
+    "fullName" text COLLATE pg_catalog."default" NOT NULL,
+    "businessName" text COLLATE pg_catalog."default" NOT NULL,
+    "businessAddress" text COLLATE pg_catalog."default",
+    "phoneNumber" text COLLATE pg_catalog."default",
+    "walletAddress" text COLLATE pg_catalog."default",
+    "walletVerificationToken" text COLLATE pg_catalog."default",
+    "walletStatus" boolean,
+    "emailVerificationToken" text COLLATE pg_catalog."default",
+    "emailStatus" boolean,
+    "publicKey" text COLLATE pg_catalog."default",
+    CONSTRAINT aditus_partners_pkey PRIMARY KEY (id)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.aditus_partners
+    OWNER to postgres;

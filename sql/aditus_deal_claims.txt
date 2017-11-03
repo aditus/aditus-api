@@ -1,0 +1,30 @@
+-- Table: public.aditus_deal_claims
+
+-- DROP TABLE public.aditus_deal_claims;
+
+CREATE TABLE public.aditus_deal_claims
+(
+    id bigint NOT NULL DEFAULT nextval('aditus_deal_claims_id_seq'::regclass),
+    "walletAddress" text COLLATE pg_catalog."default" NOT NULL,
+    "txHash" text COLLATE pg_catalog."default",
+    "userResponseData" text COLLATE pg_catalog."default",
+    "partnerResponseData" text COLLATE pg_catalog."default",
+    "dealId" bigint NOT NULL,
+    "numberOfTokens" bigint NOT NULL,
+    CONSTRAINT aditus_deal_claims_pkey PRIMARY KEY (id),
+    CONSTRAINT "FK_deal_id" FOREIGN KEY ("dealId")
+        REFERENCES public.aditus_deals (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT "FK_wallet_address" FOREIGN KEY ("walletAddress")
+        REFERENCES public.aditus_wallets ("walletAddress") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.aditus_deal_claims
+    OWNER to postgres;

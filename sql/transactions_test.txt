@@ -1,0 +1,33 @@
+-- Table: public.transactions_test
+
+-- DROP TABLE public.transactions_test;
+
+CREATE TABLE public.transactions_test
+(
+    "blockHash" text COLLATE pg_catalog."default" NOT NULL,
+    "blockNumber" numeric(32, 1) NOT NULL,
+    "from" text COLLATE pg_catalog."default" NOT NULL,
+    gas numeric(32, 1) NOT NULL,
+    "gasPrice" numeric(32, 1) NOT NULL,
+    hash text COLLATE pg_catalog."default" NOT NULL,
+    input text COLLATE pg_catalog."default",
+    nonce numeric(32, 1),
+    "to" text COLLATE pg_catalog."default",
+    "transactionIndex" numeric(32, 1),
+    value numeric(32, 1),
+    v text COLLATE pg_catalog."default",
+    r text COLLATE pg_catalog."default",
+    s text COLLATE pg_catalog."default",
+    CONSTRAINT transactions_test_pkey PRIMARY KEY (hash),
+    CONSTRAINT block_test_hash_number FOREIGN KEY ("blockHash")
+        REFERENCES public.blocks_test (hash) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.transactions_test
+    OWNER to postgres;

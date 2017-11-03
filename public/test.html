@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<!-- saved from url=(0030)http://139.99.8.164/ethwallet/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <title>EthWallet Test</title>
+    <meta name="description" content="">
+    <meta name="theme-color" content="#f7c824">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="./test_files/css">
+
+    <!-- CSS Reset -->
+    <link rel="stylesheet" href="./test_files/normalize.css">
+
+    <!-- Milligram CSS minified -->
+    <link rel="stylesheet" href="./test_files/milligram.min.css">
+
+    <link rel="stylesheet" href="./test_files/iao-alert.min.css">
+    <link rel="stylesheet" href="./test_files/test.style.css">
+</head>
+
+<body>
+<div id="container" class="container">
+<div id="pnl_instructions" style="position: fixed; float: right; right: 0; display: none">
+
+</div>
+
+<section class="container">
+    <h1>EthWallet Test</h1>
+
+    <h3>Import Wallet</h3>
+    <div id="pnl_import">
+        <fieldset>
+            <label for="txt_memornic">Mnemonic</label>
+            <input type="text" id="txt_memornic">
+            <button type="button" class="button button-outline" onclick="generateWallet()">Generate</button>
+            <button type="button" class="button" onclick="importWallet()">Import</button>
+        </fieldset>
+    </div>
+    <div class="divider"></div>
+</section>
+
+<section id="pnl_wallet_info" class="container" style="display: none">
+    <div class="row">
+        <div class="column column-20">
+            <h3>Wallet Info</h3>
+        </div>
+        <div class="column column-40">
+            <button class="button button-small button-black button-outline" onclick="refreshWallet()">Refresh</button>
+            <div id="lbl_pending" style="float:right;"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="column column-70">
+            <label>Wallet address</label>
+        </div>
+        <div class="column column-10">
+            <label>ETH</label>
+        </div>
+        <div class="column column-10">
+        </div>
+        <div class="column column-10">
+            <label>TSP</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="column column-70">
+            <span id="lbl_wallet_address"></span>
+        </div>
+        <div class="column column-10">
+            <span id="lbl_eth_balance"></span>
+        </div>
+
+        <div class="column column-10">
+        </div>
+        <div class="column column-10">
+            <span id="lbl_tsp_balance"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="column column-70">
+        </div>
+        <div class="column column-10">
+            <button id="btnAdd100ETH" class="button button-small button-outline" onclick="add100ETH()">+100</button>
+        </div>
+        <div class="column column-10"></div>
+        <div class="column column-10">
+            <button id="btnAdd100TSP" class="button button-small button-outline" onclick="add100TSP()">+100</button>
+        </div>
+    </div>
+    <div class="divider"></div>
+
+    <h3>Send Money</h3>
+    <fieldset>
+        <label>Receiver wallet address</label>
+        <input type="text" id="txt_receiver_wallet">
+        <div class="row">
+            <div class="column column-50">
+                <label>Amount</label>
+                <input type="text" id="txt_send_amount">
+            </div>
+            <div class="column column-offset-20 column-20">
+                <label>Currency</label>
+                <input type="radio" name="currency" value="TSP" checked=""> TSP
+                <input type="radio" name="currency" value="ETH" class="m-l-20"> ETH
+            </div>
+            <div class="column column-10">
+                <button id="btnSend" class="button pull-right m-t-25" onclick="sendMoney()">Send</button>
+            </div>
+        </div>
+    </fieldset>
+    <div class="divider"></div>
+    
+    <h3>Wallet Transactions</h3>
+    <table id="tbl_transactions">
+        <thead>
+        <tr>
+            <th>Hash</th>
+            <th>Amount</th>
+            <th>Contract</th>
+            <th>Sender</th>
+            <th>Receiver</th>
+            <th style="width: 90px">Currency</th>
+            <th><th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div class="divider"></div>
+</section>
+
+
+<section id="pnl_register" class="container" style="display: none">
+    <h3>Register wallet</h3>
+    <div class="row">
+        <div class="column column-20">
+            <label>Phone number</label>
+        </div>
+        <div class="column">
+            <input type="text" id="txt_phonenumber" />
+        </div>
+        <div class="column">
+            <select id="impersonate-field" style="display:none;"><option value="">(no impersonation)</option></select>
+        </div>
+        <div class="column">
+            <button onclick="register()">Register</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="column column-20">
+            <label>Confirmation Code</label>
+        </div>
+        <div class="column">
+            <input type="text" id="txt_confirmation_code">
+        </div>
+        <div class="column">
+            <button onclick="confirm()">Confirm</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="column column-20">
+            <label>Response JSON</label>
+        </div>
+        <div class="column column-80">
+            <pre style="margin-top: 0"><code id="lbl_response_json"></code></pre>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+</section>
+
+<section id="pnl_deals" class="container">
+    <h3>All Deals</h3>
+    <button type="button" class="button button-outline" onclick="refreshDeals()">Refresh</button>
+    <button type="button" class="button" onclick="loadNewDeals()">Filter New Deals</button>
+
+    <table id="tbl_deals" style="display: none">
+        <thead>
+        <tr>
+            <th>Deal id</th>
+            <th>Name</th>
+            <th>Partner</th>
+            <th>Status</th>
+            <th>Allocated Tokens</th>
+            <th>Spent Tokens</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div class="divider"></div>
+
+</section>
+
+<section class="container" id="pnl_viewdeal" style="display: none">
+    <h3>View Deal</h3>
+    <div class="row">
+        <div class="column">
+            <label>Deal id</label>
+        </div>
+        <div class="column">
+            <span id="lbl_dealid"></span>
+        </div>
+        <div class="column">
+            <label>Tokens Per Redemption</label>
+        </div>
+        <div class="column">
+            <span id="lbl_tokensPerRedemption"></span>
+        </div>
+        <div class="column">
+            <label>Is claimed?</label>
+        </div>
+        <div class="column">
+            <span id="lbl_isclaimed"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="column column-10">
+            <label>Deal JSON</label>
+        </div>
+        <div class="column column-90">
+            <pre style="margin-top: 0"><code id="lbl_json"></code></pre>
+        </div>
+    </div>
+    <div class="divider"></div>
+
+</section>
+
+<section class="container" id="pnl_claimdeal" style="display: none">
+    <h3>Claim Deal</h3>
+
+    <fieldset>
+        <label for="txt_memornic">Deal public key</label>
+        <span id="lbl_public_key"></span>
+        <label for="txt_memornic">User inputs</label>
+        <input type="text" id="txt_userinpu">
+        <button type="button" class="button button-outline" onclick="claimDeal()">Claim deal</button>
+    </fieldset>
+</section>
+    <div id="container-floating">
+        <div class="nd1 nds">
+            <div class="info-panel">
+                <h3>Instructions</h3>
+                <ol>
+                    <li>Click <b>Generate</b> and generate a passpharse (or type the one you already have)</li>
+                    <li>Click <b>Import</b> to import it.</li>
+                    <li>Type the <b>phone number</b></li>
+                    <li>Click <b>Register</b></li>
+                </ol>
+            </div>
+        </div>
+        <div id="floating-button" data-toggle="tooltip" data-placement="left" data-original-title="Create" onclick="newmail()">
+            <p class="plus">?</p>
+            <p class="edit">?</p>
+            <!--<img class="edit" src="./img/help-2.png">-->
+        </div>
+
+    </div>
+</div>
+
+    <script src="./test_files/es5-shim.js.download"></script>
+    <script src="./test_files/es6-shim.js.download"></script>
+<script src="./test_files/jquery.min.js.download"></script>
+    <script src="./test_files/crypto-js.min.js.download"></script>
+    <script src="./test_files/aes.min.js.download"></script>
+    <script src="./test_files/node_rsa_browserified.js.download"></script>
+    <script type="text/javascript" src="./test_files/async.js.download"></script>
+    <script type="text/javascript" src="./test_files/web3.js.download"></script>
+    <script type="text/javascript" src="./test_files/hooked-web3-provider.js.download"></script>
+    <script src="./test_files/lightwallet.mod.js.download"></script>
+    <script type="text/javascript" src="./test_files/iao-alert.jquery.min.js.download"></script>
+    <script type="text/javascript" src="./test_files/notifications.js.download"></script>
+
+
+    <script type="text/javascript" src="./test_files/ethwallet.js.download"></script>
+    <script type="text/javascript">
+        var ethwallet = EthWallet;
+        var walletId = null;
+        var registered = false;
+        var api = "http://13.229.100.145/api";
+        var host = "http://13.229.100.145:8545";
+        var pending = 0;
+
+        var TSP_CONTRACT_ADDRESS = '0xe2d193b7769202d58239dc312143d5ccc74b7e4c';
+        function generateWallet() {
+            passphase = ethwallet.generatePassphase("I'm a random seed");
+            $("#txt_memornic").val(passphase);
+        }
+        function importWallet() {
+            var pw = "I'm a random pw. I can be a pin or something like that.";
+            var passphase = $("#txt_memornic").val();
+            if (ethwallet.isValidMnemonic(passphase)) {
+
+                ethwallet.initWallet(host, passphase, pw, function (success) {
+                    if (success) {
+                        walletId = ethwallet.getWalletId();
+                        registered = false;
+                        $("#lbl_wallet_address").html(walletId);
+                        refreshWallet();
+                        $("#pnl_wallet_info").show();
+                        $("#pnl_register").show();
+                    } else {
+                        errorNotify("Error");
+                    }
+                })
+            } else {
+                warningNotify("Invalid passphase");
+            }
+        }
+
+        function updatePendingTx() {
+            if (pending < 1)
+                $("#lbl_pending").html('');
+            else {
+                $("#lbl_pending").html("<img src='./test_files/ajax-loader.gif' /><span> " + pending + " pending action(s)</span>");
+            }
+        }
+
+        function sendMoney() {
+            if (walletId) {
+                var receiverWallet = $('#txt_receiver_wallet').val();
+                var sendAmount = $("#txt_send_amount").val();
+                if (!receiverWallet || receiverWallet.length < 1) {
+                    warningNotify('Enter receiver address');
+                    return;
+                }
+                try {
+                    if (!sendAmount || sendAmount.length < 1) {
+                        throw new Error();
+                    }
+                    sendAmount = parseInt(sendAmount);
+                    if (isNaN(sendAmount) || sendAmount < 1) {
+                        throw new Error();
+                    }
+                } catch (e) {
+                    errorNotify('Enter valid amount');
+                    return;
+                }
+                var currency = $("input[name='currency']:checked").val();
+                $("#btnSend").attr('disabled', true);
+                var cb = function (hash) {
+                    if (!hash) {
+                        errorNotify('Unable to transfer ' + sendAmount + currency + ' to ' + receiverWallet);
+                        $("#btnSend").attr('disabled', false);
+                        return;
+                    }
+                    pending++;
+                    updatePendingTx();
+                    $("#txt_send_amount").val('');
+                    var message = 'Transfering... ' + sendAmount + currency + ' to ' + receiverWallet + ' with hash#' + hash;
+                    warningNotify(message);
+                    console.log(message)
+                    $("#btnSend").attr('disabled', false);
+                    ethwallet.callOnTxComplete(hash, function (success) {
+                        pending--;
+                        updatePendingTx();
+                        if (success) {
+                            successNotify('' + sendAmount + currency + ' was transfered to ' + receiverWallet + ' with hash#' + hash);
+                        } else {
+                            errorNotify('Unable to transfer ' + sendAmount + currency + ' to ' + receiverWallet + ' with hash#' + hash);
+                        }
+                        refreshBalance();
+                    });
+                };
+                if (currency === 'TSP') {
+                    ethwallet.transferTSP(receiverWallet, sendAmount, cb);
+                } else if (currency === 'ETH') {
+                    ethwallet.transferETH(receiverWallet, sendAmount, cb);
+                } else {
+                    warningNotify('Select a currency');
+                    $("#btnSend").attr('disabled', false);
+                }
+
+            }
+        }
+        function add100ETH() {
+            $("#btnAdd100ETH").attr('disabled', true);
+            var paras = { walletAddress: walletId };
+            $.post(api + "/dev/add100eth",
+                paras,
+                function (data, status) {
+                    if (data.success) {
+                        pending++;
+                        updatePendingTx();
+                        var message = 'Transfering... 100ETH to ' + walletId + ' with hash#' + data.hash;
+                        warningNotify(message);
+                        console.log(message)
+                        ethwallet.callOnTxComplete(data.hash, function (success) {
+                            pending--;
+                            updatePendingTx();
+                            if (success) {
+                                successNotify('100ETH was added with hash#' + data.hash);
+                            } else {
+                                errorNotify('Unable to 100ETH with hash#' + data.hash);
+                            }
+                            refreshBalance();
+                        });
+                    } else {
+                        errorNotify(data.message);
+                    }
+
+                    $("#btnAdd100ETH").attr('disabled', false);
+                }).fail(function () {
+                    errorNotify('Unable to add ETH');
+                    $("#btnAdd100ETH").attr('disabled', false);
+                });
+        }
+
+        function add100TSP() {
+            $("#btnAdd100TSP").attr('disabled', true);
+            var paras = { walletAddress: walletId };
+            $.post(api + "/dev/add100tsp",
+                paras,
+                function (data, status) {
+                    if (data.success) {
+                        pending++;
+                        updatePendingTx();
+                        var message = 'Transfering... 100TSP to ' + walletId + ' with hash#' + data.hash;
+                        warningNotify(message);
+                        console.log(message)
+                        ethwallet.callOnTxComplete(data.hash, function (success) {
+                            pending--;
+                            updatePendingTx();
+                            if (success) {
+                                successNotify('100TSP was added with hash#' + data.hash);
+                            } else {
+                                errorNotify('Unable to 100TSP with hash#' + data.hash);
+                            }
+                            refreshBalance();
+                        });
+                    } else {
+                        errorNotify(data.message);
+                    }
+
+                    $("#btnAdd100TSP").attr('disabled', false);
+                }).fail(function () {
+                    errorNotify('Unable to add TSP');
+                    $("#btnAdd100TSP").attr('disabled', false);
+                });
+        }
+
+        function refreshBalance() {
+            ethwallet.getTSPBalance(function (bal) {
+                $("#lbl_tsp_balance").html(bal.toString());
+            });
+            ethwallet.getETHBalance(function (bal) {
+                $("#lbl_eth_balance").html(bal.toString());
+            });
+        }
+        function register() {
+            var phoneNumber = $("#txt_phonenumber").val();
+            var requestData = { phoneNumber: phoneNumber };
+            var impersonateAs = $("#impersonate-field").val();
+            if (impersonateAs && impersonateAs.length<1) {
+                impersonateAs = null;
+            }
+            if (impersonateAs) {
+                requestData.impersonate = impersonateAs;
+            }
+            var strRequestData = JSON.stringify(requestData);
+            var encryptedData = CryptoJS.AES.encrypt(strRequestData, ethwallet.getWalletId()).toString();
+            ethwallet.signMessage(encryptedData, function (signature, encodedMessage) {
+                var paras = { 'signature': signature, 'data': encryptedData };
+                $.post(api + "/register",
+                    paras,
+                    function (data, status) {
+                        var strData = JSON.stringify(data, undefined, 2);
+
+                        $("#lbl_response_json").html(strData);
+                        if (data.success) {
+                            successNotify(data.message);
+                        } else {
+                            errorNotify(data.message);
+                        }
+                    });
+            });
+
+        }
+
+        function confirm() {
+            var confirmationCode = $("#txt_confirmation_code").val();
+            var requestData = { confirmationCode: confirmationCode };
+            var strRequestData = JSON.stringify(requestData);
+            ethwallet.signMessage(strRequestData, function (signature, encodedMessage) {
+                var paras = { 'signature': signature, 'data': strRequestData };
+                $.post(api + "/confirm",
+                    paras,
+                    function (data, status) {
+                        var strData = JSON.stringify(data, undefined, 2);
+
+                        $("#lbl_response_json").html(strData);
+                        if (data.success) {
+                            registered = true;
+                            refreshWallet();
+                            refreshDeals();
+                            successNotify(data.message);
+                        } else {
+                            errorNotify(data.message);
+                        }
+                    });
+            });
+
+        }
+
+        function refreshWallet() {
+            refreshBalance();
+            if (walletId)
+                $.post(api + "/transactions",
+                    {
+                        wallet: walletId,
+                        test: true
+                    },
+                    function (data, status) {
+                        if (data.success) {
+                            $('#tbl_transactions').find('tbody').html('');
+                            var allTransactions = data.result.allTransactions;
+                            var customTokens = data.result.customTokens;
+                            var myTransactions = customTokens;
+                            var hashes = [];
+                            for (var i = 0; i < customTokens.length; i++) {
+                                var row = customTokens[i];
+                                hashes.push(row.hash);
+                            }
+                            for (var i = 0; i < allTransactions.length; i++) {
+                                var row = allTransactions[i];
+                                if (hashes.indexOf(row.hash)<0)
+                                    myTransactions.push(row);
+                            }
+                            for (var i = 0; i < myTransactions.length; i++) {
+                                var row = myTransactions[i];
+                                hashes.push(row.hash);
+                                $('#tbl_transactions').find('tbody').append('<tr><td>' + row.hash + '</td><td>' + row.amount + '</td><td>' + ((row.contract == null) ? '-' : row.contract) + '</td><td>' + row.sender + '</td><td>' + row.receiver + '</td><td>' + ((row.contract == null) ? 'ETH' : ((row.contract.toUpperCase() == TSP_CONTRACT_ADDRESS.toUpperCase()) ? 'TSP' : 'Other')) + '</td><td>'+((row.verified)?'<img src="./test_files/verified.png" width="16" height="16" />':'')+'</td></tr>');
+                            }
+
+                        } else {
+                            errorNotify(data.message);
+                        }
+                    });
+        }
+        function refreshDeals() {
+            $.post(api + "/deals",
+                {
+                },
+                function (data, status) {
+                    if (data.success) {
+                        $('#tbl_deals').find('tbody').html('');
+                        for (var i = 0; i < data.results.length; i++) {
+                            var row = data.results[i];
+                            $('#tbl_deals').find('tbody').append('<tr><td><a href="#" onclick="viewDeal(' + row.id + ')" >' + row.id + '</a></td><td>' + row.dealname + '</td><td>' + row.businessName + '</td><td>' + row.status + '</td><td>' + row.allocatedTokens + '</td><td>' + row.spentTokens + '</td></tr>');
+                        }
+                        $('#tbl_deals').show();
+                    } else {
+                        errorNotify(data.message);
+                    }
+                });
+        }
+
+
+        function loadNewDeals() {
+            if (walletId) {
+                var requestData = JSON.stringify({ newOnly: true });
+                ethwallet.signMessage(requestData, function (signature, encodedMessage) {
+                    var paras = { 'signature': signature, 'data': requestData };
+                    $.post(api + "/deals",
+                    paras,
+                        function (data, status) {
+                            if (data.success) {
+                                $('#tbl_deals').find('tbody').html('');
+                                for (var i = 0; i < data.results.length; i++) {
+                                    var row = data.results[i];
+                                    $('#tbl_deals').find('tbody').append('<tr><td><a href="#" onclick="viewDeal(' + row.id + ')" >' + row.id + '</a></td><td>' + row.dealname + '</td><td>' + row.businessName + '</td><td>' + row.status + '</td><td>' + row.allocatedTokens + '</td><td>' + row.spentTokens + '</td></tr>');
+                                }
+                            } else {
+                                errorNotify(data.message);
+                            }
+                        });
+                });
+            } else {
+                warningNotify('You need to import a wallet first');
+            }
+        }
+
+        function viewDeal(id) {
+            if (walletId) {
+                ethwallet.signMessage("", function (signature, encodedMessage) {
+                    var paras = { 'signature': signature, 'data': '' };
+                    $.post(api + "/deals/" + id,
+                    paras,
+                        function (data, status) {
+                            if (data.success) {
+                                var deal = data.result.deal;
+                                $('#lbl_dealid').html(deal.id);
+
+                                $('#lbl_json').html(JSON.stringify(data, undefined, 2));
+                                $('#lbl_tokensPerRedemption').html(deal.tokensPerRedemption);
+                                $('#lbl_isclaimed').html(data.result.claim ? 'Yes' : 'No');
+                                $('#pnl_viewdeal').show();
+                                if (!data.result.claim) {
+                                    $('#lbl_public_key').html(data.result.deal.publicKey);
+                                    $('#pnl_claimdeal').show();
+                                }
+                            } else {
+                                errorNotify('unable to load');
+                            }
+                        });
+                });
+            } else {
+                $.post(api + "/deals/" + id,
+                    {
+                    },
+                    function (data, status) {
+                        if (data.success) {
+                            var deal = data.result.deal;
+                            $('#lbl_dealid').html(deal.id);
+                            $('#lbl_tokensPerRedemption').html(deal.tokensPerRedemption);
+                            $('#lbl_json').html(JSON.stringify(data, undefined, 2));
+                            $('#lbl_isclaimed').html('-');
+                            $('#pnl_viewdeal').show();
+                        } else {
+                            errorNotify('unable to load');
+                        }
+                    });
+            }
+        }
+
+        function claimDeal() {
+            var id = $('#lbl_dealid').html();
+            var datatoencrypt = $("#txt_userinpu").val();
+            var pubKey = $('#lbl_public_key').html();
+            ethwallet.encryptData(datatoencrypt, function (encryptedData) {
+                var userResponseData = encryptedData;
+                var partnerResponseData = ethwallet.encryptDataWithPublicKey(datatoencrypt, pubKey);
+
+                var responseData = {
+                    'userResponseData': userResponseData,
+                    'userResponseDataHash': ethwallet.hashData(userResponseData),
+                    'partnerResponseData': partnerResponseData,
+                    'partnerResponseDataHash': ethwallet.hashData(partnerResponseData)
+                };
+
+                var stringifiedData = JSON.stringify(responseData);
+                ethwallet.signMessage(stringifiedData, function (signature, encodedMessage) {
+                    var paras = {
+                        'signature': signature,
+                        'data': stringifiedData
+                    };
+                    $.post(api + '/deals/' + id + '/claim', paras, function (data, status) {
+                        if (data.success) {
+                            refreshDeals();
+                            viewDeal(id);
+                            successNotify(data.message);
+                        } else {
+                            errorNotify(data.message);
+
+                        }
+                    }).fail(function () {
+                        if (!registered) {
+                            warningNotify("Try registering first.");
+                        } else {
+                            errorNotify("Things went wrong.");
+                        }
+                    });
+                });
+            });
+        }
+
+        $.post(api + "/dev/impersonatelist",
+           {},
+           function (data, status) {
+               if (data.success) {
+                   var results = data.results;
+                   for (var i=0;i<results.length;i++) {
+                       var rec = results[i];
+                        $('#impersonate-field')
+                        .append($('<option>', {  value : rec.impersonateAs })
+                        .text(rec.impersonateAs)); 
+                        $('#impersonate-field').val('');
+                        $('#impersonate-field').show();
+                    }
+                }
+            });
+    </script>
+
+
+</body></html>

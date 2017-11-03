@@ -1,0 +1,60 @@
+-- FUNCTION: public.hex_to_bigint(text)
+
+-- DROP FUNCTION public.hex_to_bigint(text);
+
+CREATE OR REPLACE FUNCTION public.hex_to_bigint(
+	hexval text)
+    RETURNS bigint as $$
+select
+  (get_byte(x,0)::int8<<(7*8)) |
+  (get_byte(x,1)::int8<<(6*8)) |
+  (get_byte(x,2)::int8<<(5*8)) |
+  (get_byte(x,3)::int8<<(4*8)) |
+  (get_byte(x,4)::int8<<(3*8)) |
+  (get_byte(x,5)::int8<<(2*8)) |
+  (get_byte(x,6)::int8<<(1*8)) |
+  (get_byte(x,7)::int8)
+from (
+  select decode(lpad($1, 16, '0'), 'hex') as x
+) as a;
+$$
+language sql strict immutable;
+
+ALTER FUNCTION public.hex_to_bigint(text)
+    OWNER TO aditus;
+
+CREATE OR REPLACE VIEW public."CustomTokens" AS
+ SELECT transactions.hash,
+    transactions."to" AS contract,
+    transactions."from" AS receiver,
+    concat('0x', ltrim("substring"(transactions.input, 11, 64), '0'::text)) AS sender,
+    hex_to_bigint(ltrim("substring"(transactions.input, 75, 64), '0'::text)) AS amount,
+        CASE
+            WHEN transactions."receiptHash" ~~ '0xddf252ad%'::text THEN true
+            ELSE false
+        END AS verified
+   FROM transactions
+  WHERE transactions.input ~~ '0xa9059cbb%'::text;
+
+ALTER TABLE public."CustomTokens"
+    OWNER TO aditus;
+
+-- View: public."CustomTokens_test"
+
+-- DROP VIEW public."CustomTokens_test";
+
+CREATE OR REPLACE VIEW public."CustomTokens_test" AS
+ SELECT transactions_test.hash,
+    transactions_test."to" AS contract,
+    transactions_test."from" AS receiver,
+    concat('0x', ltrim("substring"(transactions_test.input, 11, 64), '0'::text)) AS sender,
+    hex_to_bigint(ltrim("substring"(transactions_test.input, 75, 64), '0'::text)) AS amount,
+        CASE
+            WHEN transactions_test."receiptHash" ~~ '0xddf252ad%'::text THEN true
+            ELSE false
+        END AS verified
+   FROM transactions_test
+  WHERE transactions_test.input ~~ '0xa9059cbb%'::text;
+
+ALTER TABLE public."CustomTokens_test"
+    OWNER TO aditus;

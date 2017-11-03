@@ -1,0 +1,17 @@
+-- Table: public.aditus_preferences
+
+-- DROP TABLE public.aditus_preferences;
+
+CREATE TABLE public.aditus_preferences
+(
+    name text COLLATE pg_catalog."default" NOT NULL,
+    details text COLLATE pg_catalog."default",
+    CONSTRAINT aditus_preferences_pkey PRIMARY KEY (name)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.aditus_preferences
+    OWNER to postgres;

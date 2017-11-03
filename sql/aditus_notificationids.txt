@@ -1,0 +1,17 @@
+-- Table: public.aditus_notificationids
+
+-- DROP TABLE public.aditus_notificationids;
+
+CREATE TABLE public.aditus_notificationids
+(
+    notificationid text COLLATE pg_catalog."default" NOT NULL,
+    "preferencesArray" text[] COLLATE pg_catalog."default",
+    CONSTRAINT aditus_notificationids_pkey PRIMARY KEY (notificationid)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.aditus_notificationids
+    OWNER to postgres;

@@ -1,0 +1,47 @@
+﻿function successNotify(message) {
+    $.iaoAlert({
+        msg: message,
+        type: "success",
+        autoHide: true,
+        alertTime: "5000",
+        closeOnClick: true,
+        roundedCorners: true,
+        mode: "dark"
+    });
+}
+
+function warningNotify(message) {
+    $.iaoAlert({
+        msg: message,
+        type: "warning",
+        autoHide: true,
+        alertTime: "5000",
+        closeOnClick: true,
+        roundedCorners: true,
+        mode: "dark"
+    });
+}
+
+function errorNotify(message) {
+    $.iaoAlert({
+        msg: message,
+        type: "error",
+        autoHide: true,
+        alertTime: "5000",
+        closeOnClick: true,
+        roundedCorners: true,
+        mode: "dark"
+    });
+}
+
+function notifiNotify(message) {
+    $.iaoAlert({
+        msg: message,
+        type: "error",
+        autoHide: true,
+        alertTime: "5000",
+        closeOnClick: true,
+        roundedCorners: true,
+        mode: "dark"
+    });
+}

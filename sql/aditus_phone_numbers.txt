@@ -1,0 +1,16 @@
+-- Table: public.aditus_phone_numbers
+
+-- DROP TABLE public.aditus_phone_numbers;
+
+CREATE TABLE public.aditus_phone_numbers
+(
+    "phoneNumber" text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT aditus_phone_numbers_pkey PRIMARY KEY ("phoneNumber")
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.aditus_phone_numbers
+    OWNER to postgres;
